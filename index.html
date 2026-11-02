@@ -336,41 +336,564 @@
         </section>
 
         <!-- 3D client testimonials -->
-        <section class="section testimonials3d" id="testimonials">
-          <div class="section-heading">
-            <p class="eyebrow">CLIENT TESTIMONIALS</p>
-            <h2>Trusted Technology. Proven Results.</h2>
-          </div>
-          <div
-            class="testimonials3d__stage"
-            data-testimonials3d
-            tabindex="0"
-            role="region"
-            aria-label="Client testimonials"
-          >
-            <article class="insight-card testimonials3d__card" aria-live="polite">
-              <div class="card-body">
-                <p class="card-kicker">CLIENT EXPERIENCE</p>
-                <blockquote data-testimonials3d-quote>
-                  Add an approved customer quote about their security goals and experience.
-                </blockquote>
-                <div class="testimonials3d__author">
-                  <strong data-testimonials3d-name>Client name</strong>
-                  <span data-testimonials3d-role>Organization / role</span>
+        <section class="client-testimonials3d" id="testimonials">
+          <style>
+            @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
+
+            .client-testimonials3d {
+              --testimonial-bg: #fbfcf9;
+              --testimonial-ink: #06241f;
+              --testimonial-body: #2c3f3b;
+              --testimonial-green: #5c9a2a;
+              --testimonial-star: #e07a00;
+              --testimonial-dot: 92, 154, 42;
+              --testimonial-halo: rgba(255, 255, 255, 0.9);
+              --testimonial-ring-bg: #e9ecef;
+              box-sizing: border-box;
+              max-width: 1000px;
+              margin: 0 auto;
+              padding: 48px 16px 56px;
+              text-align: center;
+              background: var(--testimonial-bg);
+              color: var(--testimonial-ink);
+              font-family: "Plus Jakarta Sans", system-ui, -apple-system,
+                "Segoe UI", sans-serif;
+              overflow-x: hidden;
+            }
+            @media (prefers-color-scheme: dark) {
+              .client-testimonials3d:not([data-theme="light"]) {
+                --testimonial-bg: #08130f;
+                --testimonial-ink: #eaf3ec;
+                --testimonial-body: #b9cbc3;
+                --testimonial-halo: rgba(255, 255, 255, 0.07);
+                --testimonial-ring-bg: #1b2b26;
+              }
+            }
+            .client-testimonials3d[data-theme="dark"] {
+              --testimonial-bg: #08130f;
+              --testimonial-ink: #eaf3ec;
+              --testimonial-body: #b9cbc3;
+              --testimonial-halo: rgba(255, 255, 255, 0.07);
+              --testimonial-ring-bg: #1b2b26;
+            }
+            .client-testimonials3d *,
+            .client-testimonials3d *::before,
+            .client-testimonials3d *::after {
+              box-sizing: border-box;
+            }
+            .client-testimonials3d__eyebrow {
+              font-size: 13px;
+              letter-spacing: 0.16em;
+              text-transform: uppercase;
+              font-weight: 500;
+            }
+            .client-testimonials3d__title {
+              font-size: clamp(28px, 5vw, 44px);
+              font-weight: 600;
+              letter-spacing: -0.02em;
+              margin: 12px 0 0;
+              color: var(--testimonial-ink);
+            }
+            .client-testimonials3d__scene {
+              perspective: 1100px;
+              margin-top: 20px;
+            }
+            .client-testimonials3d__stage {
+              position: relative;
+              height: 540px;
+              transform-style: preserve-3d;
+              transition: transform 0.25s ease-out;
+              will-change: transform;
+            }
+            .client-testimonials3d__map {
+              position: absolute;
+              inset: 0;
+              width: 100%;
+              height: 100%;
+              transform: translateZ(-120px) scale(1.12);
+              pointer-events: none;
+            }
+            .client-testimonials3d__avatar {
+              position: absolute;
+              border-radius: 50%;
+              padding: 0;
+              border: 0;
+              cursor: pointer;
+              background: var(--testimonial-ring-bg);
+              box-shadow:
+                0 0 0 8px var(--testimonial-halo),
+                0 14px 28px rgba(6, 36, 31, 0.22);
+              transition:
+                left 0.9s cubic-bezier(0.65, 0, 0.25, 1),
+                top 0.9s cubic-bezier(0.65, 0, 0.25, 1),
+                width 0.9s cubic-bezier(0.65, 0, 0.25, 1),
+                height 0.9s cubic-bezier(0.65, 0, 0.25, 1),
+                transform 0.9s cubic-bezier(0.65, 0, 0.25, 1),
+                box-shadow 0.5s;
+              transform-style: preserve-3d;
+            }
+            .client-testimonials3d__avatar svg {
+              display: block;
+              width: 100%;
+              height: 100%;
+              border-radius: 50%;
+              animation: client-testimonials3d-bob var(--duration, 6s)
+                ease-in-out infinite;
+              animation-delay: var(--delay, 0s);
+            }
+            .client-testimonials3d__avatar:hover {
+              box-shadow:
+                0 0 0 8px var(--testimonial-halo),
+                0 0 0 11px rgba(92, 154, 42, 0.5),
+                0 20px 34px rgba(6, 36, 31, 0.3);
+            }
+            .client-testimonials3d__avatar.is-main {
+              cursor: default;
+              box-shadow:
+                0 0 0 4px var(--testimonial-green),
+                0 0 0 14px var(--testimonial-halo),
+                0 26px 44px rgba(6, 36, 31, 0.35);
+            }
+            .client-testimonials3d__avatar.is-main svg {
+              animation: none;
+            }
+            @keyframes client-testimonials3d-bob {
+              0%,
+              100% {
+                transform: translateY(-4px);
+              }
+              50% {
+                transform: translateY(5px);
+              }
+            }
+            .client-testimonials3d__pulse {
+              position: absolute;
+              left: 50%;
+              top: 104px;
+              width: 96px;
+              height: 96px;
+              margin: -48px 0 0 -48px;
+              border-radius: 50%;
+              border: 2px solid var(--testimonial-green);
+              animation: client-testimonials3d-pulse 2.8s ease-out infinite;
+              pointer-events: none;
+              transform: translateZ(20px);
+            }
+            @keyframes client-testimonials3d-pulse {
+              0% {
+                transform: translateZ(20px) scale(1);
+                opacity: 0.55;
+              }
+              100% {
+                transform: translateZ(20px) scale(2.1);
+                opacity: 0;
+              }
+            }
+            .client-testimonials3d__copy {
+              position: absolute;
+              left: 50%;
+              top: 190px;
+              width: min(640px, 92%);
+              margin-left: calc(min(640px, 92%) / -2);
+              transform: translateZ(50px);
+              transform-style: preserve-3d;
+            }
+            .client-testimonials3d__card {
+              transition: opacity 0.45s, transform 0.45s;
+            }
+            .client-testimonials3d__card.is-out {
+              opacity: 0;
+              transform: rotateX(-70deg) translateY(10px);
+            }
+            .client-testimonials3d__card.is-in {
+              opacity: 0;
+              transform: rotateX(70deg) translateY(-10px);
+              transition: none;
+            }
+            .client-testimonials3d__stars {
+              color: var(--testimonial-star);
+              letter-spacing: 4px;
+              font-size: 15px;
+            }
+            .client-testimonials3d__quote {
+              margin: 14px 0;
+              font-size: clamp(14px, 2.2vw, 16px);
+              line-height: 1.75;
+              color: var(--testimonial-body);
+              font-weight: 500;
+            }
+            .client-testimonials3d__who {
+              font-weight: 600;
+              font-size: 15px;
+            }
+            .client-testimonials3d__nav {
+              display: flex;
+              gap: 10px;
+              justify-content: center;
+              margin-top: 18px;
+            }
+            .client-testimonials3d__nav button {
+              width: 24px;
+              height: 24px;
+              border-radius: 50%;
+              border: 0;
+              background: var(--testimonial-green);
+              color: #fff;
+              cursor: pointer;
+              font-size: 13px;
+              line-height: 1;
+              transition: transform 0.2s;
+            }
+            .client-testimonials3d__nav button:hover {
+              transform: translateZ(0) scale(1.2);
+            }
+            .client-testimonials3d button:focus-visible {
+              outline: 3px solid var(--testimonial-ink);
+              outline-offset: 3px;
+            }
+            @media (max-width: 640px) {
+              .client-testimonials3d__stage {
+                height: 600px;
+              }
+              .client-testimonials3d__avatar.is-small {
+                transform: scale(0.8);
+              }
+            }
+            @media (prefers-reduced-motion: reduce) {
+              .client-testimonials3d *,
+              .client-testimonials3d *::before,
+              .client-testimonials3d *::after {
+                animation: none !important;
+                transition-duration: 0.01ms !important;
+              }
+            }
+          </style>
+          <div class="client-testimonials3d__eyebrow">Client Testimonials</div>
+          <h2 class="client-testimonials3d__title">
+            Trusted Technology. Proven Results.
+          </h2>
+          <div class="client-testimonials3d__scene">
+            <div
+              class="client-testimonials3d__stage"
+              data-testimonial-stage
+              role="region"
+              aria-label="Client testimonials"
+            >
+              <canvas
+                class="client-testimonials3d__map"
+                data-testimonial-map
+                aria-hidden="true"
+              ></canvas>
+              <div class="client-testimonials3d__pulse" aria-hidden="true"></div>
+              <div class="client-testimonials3d__copy">
+                <div class="client-testimonials3d__card" data-testimonial-card>
+                  <div
+                    class="client-testimonials3d__stars"
+                    aria-label="5 out of 5 stars"
+                  >
+                    ★★★★★
+                  </div>
+                  <blockquote
+                    class="client-testimonials3d__quote"
+                    data-testimonial-quote
+                  ></blockquote>
+                  <div
+                    class="client-testimonials3d__who"
+                    data-testimonial-who
+                  ></div>
+                </div>
+                <div class="client-testimonials3d__nav">
+                  <button
+                    type="button"
+                    data-testimonial-prev
+                    aria-label="Previous testimonial"
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    data-testimonial-next
+                    aria-label="Next testimonial"
+                  >
+                    →
+                  </button>
                 </div>
               </div>
-            </article>
+            </div>
           </div>
-          <div class="testimonials3d__controls">
-            <button class="btn btn-small" type="button" data-testimonials3d-prev aria-label="Previous testimonial">←</button>
-            <div
-              class="testimonials3d__dots"
-              data-testimonials3d-dots
-              role="group"
-              aria-label="Choose a testimonial"
-            ></div>
-            <button class="btn btn-small" type="button" data-testimonials3d-next aria-label="Next testimonial">→</button>
-          </div>
+          <script>
+            (() => {
+              const root = document.currentScript.parentElement;
+              const stage = root.querySelector("[data-testimonial-stage]");
+              const card = root.querySelector("[data-testimonial-card]");
+              const quote = root.querySelector("[data-testimonial-quote]");
+              const who = root.querySelector("[data-testimonial-who]");
+              const testimonials = [
+                {
+                  q: "Oyster delivered exactly what we needed. Their team took the time to understand our requirements, recommended the right technology, and handled every stage of the installation with professionalism. The entire process was seamless, and the final solution has given us greater confidence in our security and infrastructure.",
+                  w: "Operations Director, Commercial Client",
+                  s: "#e8b794",
+                  h: "#2a1a14",
+                  c: "#8a1c33",
+                  f: 0
+                },
+                {
+                  q: "From the site survey to the final handover, nothing was left to chance. Our cameras and access control now work as one system, and our staff actually enjoy using it.",
+                  w: "Facilities Head, Logistics Group",
+                  s: "#c98f65",
+                  h: "#16100d",
+                  c: "#c0504d",
+                  f: 0
+                },
+                {
+                  q: "They explained every option in plain language and never pushed for more than we needed. The installation finished a day early.",
+                  w: "Managing Director, Retail Chain",
+                  s: "#f0c6a8",
+                  h: "#3a2418",
+                  c: "#e0529a",
+                  f: 1
+                },
+                {
+                  q: "Response times are excellent. When we added a second warehouse, the same team scaled our network and surveillance without any downtime.",
+                  w: "IT Manager, Manufacturing Client",
+                  s: "#d9a47c",
+                  h: "#1c1410",
+                  c: "#7b8794",
+                  f: 0
+                },
+                {
+                  q: "Clear communication, tidy work, and a system that runs quietly in the background. Exactly what a growing school campus needs.",
+                  w: "Administrator, Education Client",
+                  s: "#b97b56",
+                  h: "#120c0a",
+                  c: "#2f6f5e",
+                  f: 1
+                },
+                {
+                  q: "We trusted Oyster with our most sensitive areas. Their planning and documentation made our audit far easier.",
+                  w: "Compliance Lead, Healthcare Client",
+                  s: "#e3b08c",
+                  h: "#1d130f",
+                  c: "#6b1d2a",
+                  f: 0
+                }
+              ];
+
+              function face(person) {
+                const hair = person.f
+                  ? `<path d="M18 52c-4-30 8-42 32-42s36 12 32 42c-2 20-4 34-6 40H24c-2-6-4-20-6-40z" fill="${person.h}"/>`
+                  : "";
+                const top = person.f
+                  ? `<path d="M30 40c4-12 14-16 22-16s16 6 18 16c-8-4-14-6-20-6s-14 2-20 6z" fill="${person.h}"/>`
+                  : `<path d="M30 42c-2-16 8-24 20-24s24 8 20 24c-4-8-10-12-20-12s-16 4-20 12z" fill="${person.h}"/>`;
+                const beard = person.f
+                  ? ""
+                  : `<path d="M34 54q16 22 32 0q-2 14-16 16q-14-2-16-16z" fill="${person.h}" opacity=".55"/>`;
+                return `<svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" fill="#e9ecef"/>${hair}<path d="M14 100c2-20 16-26 36-26s34 6 36 26z" fill="${person.c}"/><rect x="43" y="62" width="14" height="16" rx="5" fill="${person.s}"/><ellipse cx="50" cy="46" rx="18" ry="21" fill="${person.s}"/>${top}<circle cx="43" cy="47" r="1.8" fill="#222"/><circle cx="57" cy="47" r="1.8" fill="#222"/><path d="M43 57q7 6 14 0" stroke="#7a3b2a" stroke-width="2" fill="none" stroke-linecap="round"/>${beard}</svg>`;
+              }
+
+              const slots = [
+                [14, 150, 64, 40],
+                [68, 70, 56, -40],
+                [89, 200, 66, 70],
+                [5, 300, 60, 90],
+                [26, 470, 46, -30]
+              ];
+              let current = 0;
+              let busy = false;
+              let timer;
+              const avatars = testimonials.map((person, index) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "client-testimonials3d__avatar";
+                button.setAttribute(
+                  "aria-label",
+                  `Show testimonial ${index + 1}`
+                );
+                button.innerHTML = face(person);
+                button.style.setProperty("--duration", `${5 + index * 0.7}s`);
+                button.style.setProperty("--delay", `${-index * 0.9}s`);
+                button.addEventListener("click", () => go(index));
+                stage.appendChild(button);
+                return button;
+              });
+
+              function layout() {
+                const width = stage.clientWidth;
+                avatars.forEach((avatar, index) => {
+                  const offset =
+                    (index - current + testimonials.length) %
+                    testimonials.length;
+                  if (offset === 0) {
+                    avatar.classList.add("is-main");
+                    avatar.classList.remove("is-small");
+                    Object.assign(avatar.style, {
+                      left: "50%",
+                      top: "104px",
+                      width: "96px",
+                      height: "96px",
+                      transform:
+                        "translate(-50%,-50%) translateZ(120px)",
+                      zIndex: 5
+                    });
+                    avatar.tabIndex = -1;
+                  } else {
+                    const [x, y, size, depth] = slots[offset - 1];
+                    avatar.classList.remove("is-main");
+                    avatar.classList.add("is-small");
+                    avatar.tabIndex = 0;
+                    Object.assign(avatar.style, {
+                      left: `${(x / 100) * width}px`,
+                      top: `${y}px`,
+                      width: `${size}px`,
+                      height: `${size}px`,
+                      transform: `translate(-50%,-50%) translateZ(${depth}px)`,
+                      zIndex: 2
+                    });
+                  }
+                });
+              }
+
+              function show() {
+                quote.textContent = `“${testimonials[current].q}”`;
+                who.textContent = `— ${testimonials[current].w}`;
+              }
+
+              function go(index) {
+                if (busy || index === current) return;
+                busy = true;
+                card.classList.add("is-out");
+                current = (index + testimonials.length) % testimonials.length;
+                layout();
+                window.setTimeout(() => {
+                  show();
+                  card.classList.remove("is-out");
+                  card.classList.add("is-in");
+                  void card.offsetWidth;
+                  card.classList.remove("is-in");
+                  busy = false;
+                }, 450);
+                restart();
+              }
+
+              function restart() {
+                window.clearInterval(timer);
+                timer = window.setInterval(
+                  () => go(current + 1),
+                  6500
+                );
+              }
+
+              root
+                .querySelector("[data-testimonial-next]")
+                .addEventListener("click", () => go(current + 1));
+              root
+                .querySelector("[data-testimonial-prev]")
+                .addEventListener("click", () => go(current - 1));
+              stage.addEventListener("pointerenter", () =>
+                window.clearInterval(timer)
+              );
+              stage.addEventListener("pointerleave", () => {
+                restart();
+                stage.style.transform = "";
+              });
+              stage.addEventListener("pointermove", event => {
+                const bounds = stage.getBoundingClientRect();
+                const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+                const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+                stage.style.transform = `rotateY(${x * 14}deg) rotateX(${
+                  -y * 10
+                }deg)`;
+              });
+
+              const canvas = root.querySelector("[data-testimonial-map]");
+              const context = canvas.getContext("2d");
+              let dots = [];
+              const land = [
+                [[8, 8], [28, 6], [34, 14], [30, 22], [24, 30], [20, 34], [16, 26], [8, 18]],
+                [[24, 35], [34, 37], [36, 46], [30, 60], [26, 52], [24, 42]],
+                [[46, 10], [56, 8], [58, 16], [50, 20], [45, 16]],
+                [[46, 23], [58, 23], [62, 34], [56, 48], [50, 46], [46, 34]],
+                [[56, 8], [84, 8], [90, 18], [82, 28], [70, 30], [62, 24], [56, 16]],
+                [[78, 42], [90, 42], [90, 52], [80, 52]]
+              ];
+
+              function buildMap() {
+                const width = (canvas.width = stage.clientWidth);
+                const height = (canvas.height = stage.clientHeight);
+                const offscreen = document.createElement("canvas");
+                offscreen.width = width;
+                offscreen.height = height;
+                const offscreenContext = offscreen.getContext("2d");
+                const scaleX = (width * 0.78) / 100;
+                const scaleY = (height * 0.72) / 60;
+                const offsetX = width * 0.11;
+                const offsetY = height * 0.28;
+                offscreenContext.fillStyle = "#000";
+                land.forEach(points => {
+                  offscreenContext.beginPath();
+                  points.forEach(([x, y], index) =>
+                    offscreenContext[
+                      index ? "lineTo" : "moveTo"
+                    ](offsetX + x * scaleX, offsetY + y * scaleY)
+                  );
+                  offscreenContext.fill();
+                });
+                const pixels = offscreenContext.getImageData(
+                  0,
+                  0,
+                  width,
+                  height
+                ).data;
+                dots = [];
+                for (let y = 0; y < height; y += 9) {
+                  for (let x = 0; x < width; x += 9) {
+                    if (pixels[(y * width + x) * 4 + 3] > 128) {
+                      dots.push([x, y]);
+                    }
+                  }
+                }
+              }
+
+              const reducedMotion = window.matchMedia(
+                "(prefers-reduced-motion: reduce)"
+              ).matches;
+              function draw(time) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                const rgb = getComputedStyle(root)
+                  .getPropertyValue("--testimonial-dot")
+                  .trim();
+                for (const [x, y] of dots) {
+                  const alpha =
+                    0.14 +
+                    0.5 *
+                      Math.max(0, Math.sin(x * 0.012 - y * 0.006 - time / 900)) **
+                        6;
+                  context.fillStyle = `rgba(${rgb},${alpha})`;
+                  context.beginPath();
+                  context.arc(x, y, 2.2, 0, 6.283);
+                  context.fill();
+                }
+                if (!reducedMotion) {
+                  window.requestAnimationFrame(draw);
+                }
+              }
+
+              function init() {
+                buildMap();
+                layout();
+                if (reducedMotion) draw(0);
+              }
+
+              window.addEventListener("resize", init);
+              show();
+              init();
+              if (!reducedMotion) {
+                window.requestAnimationFrame(draw);
+                restart();
+              }
+            })();
+          </script>
         </section>
 
         <!-- Insights -->
