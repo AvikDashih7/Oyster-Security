@@ -119,6 +119,91 @@ textarea {
     color 0.25s,
     opacity 0.25s;
 }
+.nav-dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+}
+.nav-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: auto;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-family: "Suisse Intl", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  opacity: 0.95;
+  transition:
+    color 0.25s,
+    opacity 0.25s;
+}
+.nav-dropdown-toggle:hover,
+.nav-dropdown-toggle:focus-visible {
+  color: #669933;
+  opacity: 1;
+}
+.nav-dropdown-toggle::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #669933;
+  animation: navDotBlink 1s steps(2, start) infinite;
+}
+.nav-dropdown-toggle .chev {
+  margin: -3px 0 0 2px;
+  transition: transform 0.2s ease;
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: -12px;
+  z-index: 25;
+  display: grid;
+  min-width: 220px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(6, 24, 54, 0.96);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s;
+}
+.nav-dropdown-menu a {
+  padding: 9px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.nav-dropdown-menu a::before {
+  display: none;
+}
+.nav-dropdown-menu a:hover,
+.nav-dropdown-menu a:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu,
+.nav-dropdown.is-open .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-dropdown.is-open .nav-dropdown-toggle .chev {
+  transform: rotate(225deg);
+}
 .main-nav a.active {
   color: #669933;
 }
@@ -145,18 +230,17 @@ textarea {
   position: relative;
   isolation: isolate;
   --btn-hover-text: #e4f2d5;
-  --btn-border-highlight: #d7e8c9;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 17px;
+  gap: 9px;
   background: var(--button-gradient);
   background-size: 300% 100%;
   animation: btnFlow 5s linear infinite;
   color: white;
   padding: 13px 20px;
   border: 1px solid var(--green);
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.2px;
@@ -167,29 +251,14 @@ textarea {
 }
 .btn::before {
   content: "";
-  position: absolute;
-  inset: -1px;
-  z-index: 0;
-  padding: 1px;
-  border-radius: inherit;
-  background: conic-gradient(
-    from var(--btn-border-angle),
-    transparent 0deg 285deg,
-    color-mix(in srgb, var(--btn-border-highlight) 20%, transparent) 315deg,
-    var(--btn-border-highlight) 335deg,
-    color-mix(in srgb, var(--btn-border-highlight) 45%, transparent) 350deg,
-    transparent 360deg
-  );
+  position: static;
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: currentColor;
   pointer-events: none;
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  animation: btnBorderSpin 4.5s linear infinite;
+  transition: background-color 0.25s;
 }
 .btn > * {
   position: relative;
@@ -199,6 +268,14 @@ textarea {
   background: var(--button-gradient);
   transform: translateY(-3px);
   box-shadow: 0 8px 22px #38651e35;
+}
+.btn.btn-white:hover {
+  background: var(--button-light-gradient);
+  color: var(--navy);
+}
+.btn.btn-white:hover::before,
+.btn.btn-white:focus-visible::before {
+  background: var(--green);
 }
 .btn-label {
   display: block;
@@ -236,8 +313,11 @@ textarea {
 .menu-toggle {
   display: none;
 }
-.brand-mark {
-  width: clamp(125px, 14.9vw, 230px);
+.site-header .brand-mark {
+  width: 240px;
+}
+.footer-brand .brand-mark {
+  width: 327px;
 }
 
 /* ==================== SHARED BUTTONS END ==================== */
@@ -367,7 +447,9 @@ textarea {
   animation-delay: 0.2s;
 }
 .hero-content > h1 {
-  animation-delay: 0.35s;
+  animation:
+    heroTextIn 0.8s 0.35s both,
+    sectionHeadingGradient 8s 0.35s ease-in-out infinite;
 }
 .hero-content > .hero-intro {
   animation-delay: 0.5s;
@@ -397,7 +479,8 @@ textarea {
   font-weight: 700;
 }
 .hero h1 span {
-  color: #fff;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 .hero-intro {
   max-width: 440px;
@@ -632,13 +715,13 @@ textarea {
 .card-body h3,
 .insight-card h3 {
   font-family: inherit;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1.35;
   margin: 0 0 9px;
   letter-spacing: -0.3px;
 }
 .card-body > p:not(.card-kicker) {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--muted);
   margin: 0 0 17px;
 }
@@ -719,21 +802,12 @@ textarea {
   max-width: 430px;
 }
 .insights-top > div:last-child > p {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
   margin-top: 0;
 }
 .insights-top .btn {
   margin-top: 8px;
-}
-.insights-top .btn::after {
-  content: "";
-  order: -1;
-  width: 6px;
-  height: 6px;
-  flex: 0 0 6px;
-  border-radius: 50%;
-  background: #fff;
 }
 .insight-grid {
   display: flex;
@@ -855,12 +929,12 @@ textarea {
 .insight-card .body .eyebrow {
   margin: 0 0 18px;
   color: #6b736f;
-  font-size: 11.5px;
+  font-size: 15px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
 }
 .insight-card .body h2 {
-  max-width: 30ch;
+  max-width: 33ch;
   margin: 0 0 18px;
   color: #0d3b30;
   font-size: 19px;
@@ -876,56 +950,6 @@ textarea {
 }
 .insight-card .body .btn {
   align-self: flex-start;
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  gap: 9px;
-  padding: 13px 24px;
-  border: 0;
-  border-radius: 6px;
-  background: var(--green);
-  color: #fff;
-  font-size: 12.5px;
-  font-weight: 500;
-  transition: none;
-}
-.insight-card .body .btn::before {
-  position: static;
-  inset: auto;
-  z-index: auto;
-  width: 4px;
-  height: 4px;
-  flex: 0 0 4px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: #fff;
-  -webkit-mask: none;
-  mask: none;
-  pointer-events: auto;
-  animation: none;
-  content: "";
-}
-.insight-card .body .btn::after {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: var(--green-dark);
-  transform: translateX(-101%);
-  transition: transform 0.45s cubic-bezier(0.7, 0, 0.2, 1);
-  content: "";
-}
-.insight-card .body .btn:hover::after,
-.insight-card .body .btn:focus-visible::after {
-  transform: translateX(0);
-}
-.insight-card .body .btn:hover,
-.insight-card .body .btn:focus-visible {
-  background: var(--green);
-  color: #fff;
-  transform: none;
-  box-shadow: none;
 }
 .insight-card .body .btn:focus-visible {
   outline: 2px solid #0d3b30;
@@ -985,31 +1009,18 @@ textarea {
   color: #fff;
 }
 .contact-copy h2 {
-  font-size: clamp(29px, 3.2vw, 43px);
+  font-size: 65px;
 }
 .contact-copy > p:not(.eyebrow) {
-  font-size: 13px;
+  font-size: 16px;
   color: #edf5e7;
-  max-width: 360px;
+  max-width: 460px;
 }
 .contact-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 18px;
-}
-.contact-actions .btn {
-  border-radius: 6px;
-  font-size: 14px;
-}
-.contact-actions .btn::after {
-  content: "";
-  order: -1;
-  width: 6px;
-  height: 6px;
-  flex: 0 0 6px;
-  border-radius: 50%;
-  background: #fff;
 }
 .contact-actions .btn-white {
   background: var(--button-light-gradient);
@@ -1018,9 +1029,6 @@ textarea {
   border-color: #fff;
   color: var(--navy);
   --btn-hover-text: var(--green-dark);
-}
-.contact-actions .btn-white::after {
-  background: currentColor;
 }
 .contact-ornament {
   position: absolute;
@@ -1139,7 +1147,7 @@ textarea {
 }
 .footer-main {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 0.7fr;
+  grid-template-columns: 1.5fr 1fr 1fr 0.9fr;
   gap: 40px;
   padding-bottom: 35px;
   transform-style: preserve-3d;
@@ -1156,7 +1164,7 @@ textarea {
 .footer-brand > p {
   font-size: 16px;
   color: #aab3ab;
-  max-width: 250px;
+  max-width: 340px;
   margin: 18px 0;
 }
 .socials {
@@ -1181,6 +1189,40 @@ textarea {
   text-align: left;
   transform-origin: right center;
 }
+.footer-col:last-child a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.footer-icon {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  place-items: center;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.footer-icon i {
+  color: #fff;
+  font-size: 15px;
+  transition: transform 0.3s ease;
+}
+.footer-col:last-child a:hover .footer-icon,
+.footer-col:last-child a:focus-visible .footer-icon {
+  transform: translateY(-3px) rotate(-8deg);
+  border-color: #a7d57a;
+  box-shadow: 0 0 12px rgba(167, 213, 122, 0.45);
+}
+.footer-col:last-child a:hover .footer-icon i,
+.footer-col:last-child a:focus-visible .footer-icon i {
+  transform: scale(1.12);
+}
 .footer-col h3 {
   font-size: 20px;
   text-transform: uppercase;
@@ -1193,11 +1235,22 @@ textarea {
   font-size: 16px;
   color: #cececf;
   margin: 0;
-  transition: color 0.2s;
+}
+.footer-col a {
+  transform: perspective(600px) translateZ(0);
+  transform-origin: left center;
+  transition:
+    color 0.2s,
+    transform 0.3s ease;
 }
 .footer-col a:hover,
+.footer-col a:focus-visible,
 .footer-bottom a:hover {
   color: #a7d57a;
+}
+.footer-col a:hover,
+.footer-col a:focus-visible {
+  transform: perspective(600px) translateZ(8px) rotateY(3deg);
 }
 .footer-bottom {
   display: flex;
@@ -1274,16 +1327,6 @@ textarea {
 /* ==================== SITE FOOTER AND SHARED PAGE CONTROLS END ==================== */
 
 /* ==================== SHARED BUTTON, NAVIGATION, AND REVEAL ANIMATIONS START ==================== */
-@property --btn-border-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-@keyframes btnBorderSpin {
-  to {
-    --btn-border-angle: 360deg;
-  }
-}
 @keyframes navDotBlink {
   to {
     opacity: 0.2;
@@ -1311,38 +1354,23 @@ textarea {
 /* ==================== HEADER ACTIONS START ==================== */
 .header-phone {
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
   gap: 7px;
   font-size: 16px;
   font-weight: 500;
   white-space: nowrap;
 }
-.header-phone svg {
+.header-phone i {
   width: 12px;
   height: 12px;
-  fill: #8fc84a;
+  color: #8fc84a;
   animation: ringShake 3.2s ease-in-out infinite;
   transform-origin: 50% 50%;
 }
 .header-cta,
 .hero-btn,
 .hero-actions .btn-white {
-  gap: 9px;
-  border-radius: 6px;
   font-size: 16px;
-  font-weight: 500;
-}
-.header-cta::after,
-.hero-btn::after,
-.hero-actions .btn-white::after {
-  content: "";
-  order: -1;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  position: relative;
-  z-index: 1;
 }
 .hero-btn {
   padding: clamp(9px, 1vw, 14px) clamp(14px, 1.6vw, 22px);
@@ -1355,7 +1383,6 @@ textarea {
   animation: btnFlow 5s linear infinite;
   color: var(--navy);
   --btn-hover-text: var(--green-dark);
-  --btn-border-highlight: var(--green);
 }
 /* ==================== HEADER ACTIONS END ==================== */
 
@@ -1378,6 +1405,20 @@ textarea {
   font-weight: 500;
   letter-spacing: -0.5px;
   line-height: 1.1;
+  color: #fff;
+  background-image: linear-gradient(
+    100deg,
+    #fff 0%,
+    #a9d8f5 30%,
+    #a4df74 55%,
+    #a9d8f5 75%,
+    #fff 100%
+  );
+  background-size: 250% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .hero-intro {
   max-width: 40vw;
@@ -1518,6 +1559,16 @@ textarea {
     transform: translateY(-10px) rotate(1.5deg);
   }
 }
+@keyframes phoneDropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-110vh);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 @keyframes btnFlow {
   to {
     background-position: -300% 0;
@@ -1618,10 +1669,42 @@ textarea {
   background: #fff;
   color: var(--ink);
 }
+#sec .stick::before,
+#sec .stick::after {
+  content: "";
+  position: absolute;
+  right: 6%;
+  top: 24%;
+  aspect-ratio: 1;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
+}
+#sec .stick::before {
+  z-index: 0;
+  width: min(52vw, 680px);
+  background-image: url("image/fet_back.png");
+  opacity: 0.18;
+  filter: brightness(0.55);
+}
+#sec .stick::after {
+  z-index: 0;
+  top: 31%;
+  right: 10%;
+  width: min(40vw, 520px);
+  background-image: url("image/fet_cam.png");
+  opacity: 0.72;
+  filter: brightness(0.72);
+}
 #sec,
 #sec * {
   box-sizing: border-box;
   margin: 0;
+}
+#sec .stick > *:not(.stage):not(.prog) {
+  position: relative;
+  z-index: 2;
 }
 #sec .eyebrow {
   margin-bottom: 12px;
@@ -1657,7 +1740,6 @@ textarea {
 }
 #sec .btn {
   display: inline-flex;
-  gap: 0;
   font: inherit;
   font-size: 16px;
   font-weight: 700;
@@ -1679,18 +1761,13 @@ textarea {
   color: var(--navy);
   --btn-hover-text: var(--green-dark);
 }
-#sec .btn:before {
-  content: "•";
-  position: static;
-  inset: auto;
-  z-index: auto;
-  padding: 0;
-  margin-right: 8px;
-  border-radius: 0;
-  background: none;
-  animation: none;
-  -webkit-mask: none;
-  mask: none;
+#sec .btn:not(.p):hover {
+  background: var(--button-light-gradient);
+  color: var(--navy);
+}
+#sec .btn:not(.p):hover::before,
+#sec .btn:not(.p):focus-visible::before {
+  background: var(--green);
 }
 #sec .list {
   position: relative;
@@ -1783,7 +1860,7 @@ textarea {
   margin: 8px 0 10px;
 }
 #sec .body p {
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.65;
   color: var(--mut);
   max-width: 290px;
@@ -1797,10 +1874,11 @@ textarea {
 }
 #sec .stage {
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 20%;
+  top: 26%;
   width: 52%;
-  height: 100%;
+  height: 76%;
+  z-index: 1;
   perspective: 1100px;
   pointer-events: none;
 }
@@ -2027,18 +2105,19 @@ textarea {
 #about .txt {
   position: relative;
   z-index: 2;
-  max-width: 460px;
+  max-width: 650px;
   transform: translateZ(60px);
 }
 #about h3 {
   margin: 12px 0;
-  font-size: clamp(28px, 4vw, 44px);
+  font-size: 65px;
   font-weight: 600;
   line-height: 1.1;
 }
 #about .txt p {
   margin-bottom: 22px;
-  font-size: 12px;
+  font-size: 16px;
+  max-width: 500px;
   line-height: 1.5;
   opacity: 0.85;
 }
@@ -2092,7 +2171,7 @@ textarea {
   height: 49px;
   overflow: visible;
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.4));
-  animation: aboutCameraFloat 4s ease-in-out infinite;
+  animation: aboutCameraAim 3.2s ease-in-out infinite;
 }
 #about .about-camera svg path {
   fill: #e8f7df;
@@ -2108,6 +2187,9 @@ textarea {
 #about .about-camera svg .camera-lens {
   fill: #a4df74;
   stroke: #f0ffe6;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: aboutCameraLens 2s ease-in-out infinite;
 }
 #about .about-camera svg .camera-lens-ring {
   fill: #d8f3c9;
@@ -2141,7 +2223,7 @@ textarea {
   top: 16%;
   right: 6%;
   z-index: 3;
-  width: min(460px, 49%);
+  width: min(520px, 52%);
   padding: 14px;
   border: 1px solid #63717a;
   border-radius: 18px;
@@ -2188,8 +2270,7 @@ textarea {
   display: block;
   width: 100%;
   height: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
+  border: 0;
   background: #07120f;
 }
 #about .about-tv-screen::after {
@@ -2202,21 +2283,6 @@ textarea {
     rgba(175, 229, 244, 0.035) 5px
   );
   content: "";
-  pointer-events: none;
-}
-#about .about-tv-status {
-  position: absolute;
-  top: 8px;
-  right: 40px;
-  left: 8px;
-  z-index: 2;
-  margin: 0;
-  padding: 5px 8px;
-  border-radius: 4px;
-  background: rgba(4, 14, 10, 0.78);
-  color: #fff;
-  font-size: 11px;
-  line-height: 1.4;
   pointer-events: none;
 }
 #about .about-tv-close {
@@ -2246,12 +2312,26 @@ textarea {
   height: 30px;
   border-radius: 0 0 12px 12px;
   background: linear-gradient(90deg, #141b20, #68757c 50%, #171e23);
+  -webkit-clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%);
   clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%);
 }
 
-@keyframes aboutCameraFloat {
+@keyframes aboutCameraAim {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
   50% {
-    transform: translateY(-4px);
+    transform: translateY(-3px) rotate(3deg);
+  }
+}
+@keyframes aboutCameraLens {
+  0%,
+  100% {
+    transform: scale(0.85);
+  }
+  50% {
+    transform: scale(1.2);
   }
 }
 @keyframes aboutCameraStatus {
@@ -2474,6 +2554,46 @@ textarea {
     padding: 12px 4px;
     border-bottom: 1px solid #ffffff18;
   }
+  .nav-dropdown {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    height: auto;
+    border-bottom: 1px solid #ffffff18;
+  }
+  .nav-dropdown-toggle {
+    justify-content: space-between;
+    width: 100%;
+    height: 48px;
+    padding: 12px 4px;
+    border-bottom: 0;
+  }
+  .nav-dropdown-menu {
+    position: static;
+    grid-column: 1 / -1;
+    min-width: 0;
+    max-height: 0;
+    padding: 0 8px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      max-height 0.25s ease,
+      padding 0.25s ease;
+  }
+  .nav-dropdown.is-open .nav-dropdown-menu {
+    max-height: 240px;
+    padding: 4px 8px 10px;
+  }
+  .nav-dropdown-menu a {
+    padding: 9px 10px;
+    border-bottom: 0;
+    font-size: 14px;
+  }
   .header-right {
     display: none;
   }
@@ -2519,6 +2639,10 @@ textarea {
     right: 13%;
     width: 95px;
     bottom: 35px;
+    animation: phoneFloat 6s 1.8s ease-in-out infinite;
+  }
+  .hero-phone img {
+    animation: phoneDropIn 1.4s 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   }
   .intro-strip {
     padding-top: 25px;
@@ -2625,7 +2749,7 @@ textarea {
     height: 64px;
     padding-inline: 16px;
   }
-  .brand-mark {
+  .site-header .brand-mark {
     width: clamp(118px, 38vw, 140px);
   }
   .menu-toggle {
@@ -3334,6 +3458,79 @@ textarea {
 
 /* ==================== 3D CLIENT TESTIMONIALS END ==================== */
 
+body .site-shell main h2,
+body .site-shell main #sec h1 {
+  color: var(--navy);
+  background-image: linear-gradient(
+    100deg,
+    #08264a 0%,
+    #155a50 35%,
+    #4f8129 55%,
+    #155a50 75%,
+    #08264a 100%
+  );
+  background-size: 250% 100%;
+  background-position: 0% 50%;
+  animation: sectionHeadingGradient 8s ease-in-out infinite;
+}
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  body .site-shell main h2,
+  body .site-shell main #sec h1 {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}
+#contact .contact-copy h2 {
+  color: #fff;
+  background-image: linear-gradient(
+    100deg,
+    #fff 0%,
+    #eaf5e3 35%,
+    #fff 55%,
+    #d9e8d0 75%,
+    #fff 100%
+  );
+}
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  #contact .contact-copy h2 {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .client-testimonials3d:not([data-theme="light"]) h2 {
+    background-image: linear-gradient(
+      100deg,
+      #eaf3ec 0%,
+      #a4df74 40%,
+      #d8f3c9 60%,
+      #eaf3ec 100%
+    );
+  }
+}
+.client-testimonials3d[data-theme="dark"] h2 {
+  background-image: linear-gradient(
+    100deg,
+    #eaf3ec 0%,
+    #a4df74 40%,
+    #d8f3c9 60%,
+    #eaf3ec 100%
+  );
+}
+@keyframes sectionHeadingGradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 /* ==================== ABOUT TELEVISION MOBILE OVERRIDES START ==================== */
 @media (max-width: 800px) {
   #about .about-camera {
@@ -3350,11 +3547,6 @@ textarea {
   }
   #about .about-camera-label {
     font-size: 7px;
-  }
-  #about .about.tv-open .about-camera {
-    top: 8px;
-    right: auto;
-    left: 12px;
   }
   #about .about-tv {
     top: 16%;

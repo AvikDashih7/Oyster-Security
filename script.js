@@ -37,13 +37,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const menuToggle = document.querySelector(".menu-toggle");
   const nav = document.querySelector(".main-nav");
   const navLinks = document.querySelectorAll(".main-nav a");
+  const navDropdown = document.querySelector(".nav-dropdown");
+  const navDropdownToggle = document.querySelector(".nav-dropdown-toggle");
   const mobileViewport = window.matchMedia("(max-width: 920px)");
 
   function closeMenu() {
     menuToggle.classList.remove("active");
     nav.classList.remove("open");
+    navDropdown?.classList.remove("is-open");
     menuToggle.setAttribute("aria-expanded", "false");
     menuToggle.setAttribute("aria-label", "Open navigation");
+    navDropdownToggle?.setAttribute("aria-expanded", "false");
+    navDropdownToggle?.setAttribute("aria-label", "Show solutions menu");
     nav.inert = mobileViewport.matches;
   }
   nav.inert = mobileViewport.matches;
@@ -54,6 +59,16 @@ document.addEventListener("DOMContentLoaded", () => {
     menuToggle.setAttribute("aria-label", isOpen ? "Close navigation" : "Open navigation");
     nav.inert = mobileViewport.matches && !isOpen;
   });
+  if (navDropdown && navDropdownToggle) {
+    navDropdownToggle.addEventListener("click", () => {
+      const isOpen = navDropdown.classList.toggle("is-open");
+      navDropdownToggle.setAttribute("aria-expanded", String(isOpen));
+      navDropdownToggle.setAttribute(
+        "aria-label",
+        isOpen ? "Hide solutions menu" : "Show solutions menu"
+      );
+    });
+  }
   navLinks.forEach(link => link.addEventListener("click", closeMenu));
   document.addEventListener("keydown", event => { if (event.key === "Escape") closeMenu(); });
   mobileViewport.addEventListener("change", closeMenu);
@@ -65,15 +80,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const aboutTv = aboutPanel?.querySelector(".about-tv");
   const aboutTvClose = aboutPanel?.querySelector(".about-tv-close");
   const aboutTvVideo = aboutPanel?.querySelector(".about-tv-video");
-  const aboutTvStatus = aboutPanel?.querySelector(".about-tv-status");
 
   if (
     aboutPanel &&
     aboutCamera &&
     aboutTv &&
     aboutTvClose &&
-    aboutTvVideo &&
-    aboutTvStatus
+    aboutTvVideo
   ) {
     function setAboutTvOpen(isOpen, returnFocus = false) {
       aboutCamera.setAttribute("aria-expanded", String(isOpen));
@@ -89,15 +102,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (isOpen) {
         aboutTvClose.focus();
-        aboutTvVideo.play().catch(() => {
-          aboutTvStatus.textContent = aboutTvVideo.error
-            ? "Add video/oyster-security-ad.mp4 to play the advertisement."
-            : "Playback did not start. Use the player controls to try again.";
-        });
+        aboutTvVideo.src =
+          "https://www.youtube-nocookie.com/embed/LhEjFRvM4Ik?autoplay=1&mute=1&playsinline=1&rel=0";
       } else {
-        aboutTvVideo.pause();
-        if (aboutTvVideo.readyState > 0) aboutTvVideo.currentTime = 0;
-        aboutTvStatus.textContent = "";
+        aboutTvVideo.src = "about:blank";
         if (returnFocus) aboutCamera.focus();
       }
     }
@@ -1007,11 +1015,11 @@ if (insightGrid) {
     (_, index) => `image/user_${index + 1}.png`,
   );
   const slots = [
-    [14, 150, 64, 40],
-    [68, 70, 56, -40],
-    [89, 200, 66, 70],
-    [5, 300, 60, 90],
-    [26, 470, 46, -30],
+    [16, 150, 64, 80],
+    [84, 70, 56, 80],
+    [86, 200, 66, 80],
+    [14, 300, 60, 80],
+    [26, 470, 46, 80],
   ];
   let current = 0;
   let busy = false;
@@ -1054,11 +1062,19 @@ if (insightGrid) {
         avatar.tabIndex = -1;
       } else {
         const [x, y, size, depth] = slots[offset - 1];
+        const edgePadding = Math.min(
+          width / 2,
+          Math.max(size / 2 + width * 0.18, width * 0.25),
+        );
+        const centerX = Math.max(
+          edgePadding,
+          Math.min((x / 100) * width, width - edgePadding),
+        );
         avatar.classList.remove("is-main");
         avatar.classList.add("is-small");
         avatar.tabIndex = 0;
         Object.assign(avatar.style, {
-          left: `${(x / 100) * width}px`,
+          left: `${centerX}px`,
           top: `${y}px`,
           width: `${size}px`,
           height: `${size}px`,
@@ -1110,6 +1126,10 @@ if (insightGrid) {
     stage.style.transform = "";
   });
   stage.addEventListener("pointermove", (event) => {
+    if (window.matchMedia("(max-width: 640px)").matches) {
+      stage.style.transform = "";
+      return;
+    }
     const bounds = stage.getBoundingClientRect();
     const x = (event.clientX - bounds.left) / bounds.width - 0.5;
     const y = (event.clientY - bounds.top) / bounds.height - 0.5;
