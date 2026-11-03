@@ -2017,7 +2017,7 @@ textarea {
   padding: 0 5%;
   overflow: hidden;
   border-radius: 18px;
-  background: url(../image/about_us.jpg) no-repeat;
+  background: url("image/about_us.jpg") no-repeat;
   background-position: bottom;
   background-size: cover;
   color: #fff;
@@ -2044,21 +2044,24 @@ textarea {
 }
 #about .about-camera {
   position: absolute;
-  top: 28%;
-  left: 70%;
+  top: 12%;
+  left: 30%;
   z-index: 4;
   display: grid;
-  place-items: center;
-  width: 96px;
-  height: 84px;
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 18px;
-  background: linear-gradient(145deg, rgba(20, 52, 65, 0.92), rgba(7, 24, 35, 0.96));
+  justify-items: center;
+  align-content: center;
+  gap: 5px;
+  width: 118px;
+  height: 112px;
+  padding: 11px;
+  border: 1px solid rgba(208, 244, 224, 0.75);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(55, 112, 52, 0.96), rgba(7, 35, 31, 0.97));
   box-shadow:
     0 18px 34px rgba(0, 0, 0, 0.35),
-    inset 0 1px rgba(255, 255, 255, 0.4);
-  color: #dcebf0;
+    0 0 24px rgba(121, 206, 110, 0.2),
+    inset 0 1px rgba(255, 255, 255, 0.45);
+  color: #efffe7;
   cursor: pointer;
   transform: translateZ(70px) rotateY(-12deg);
   transform-style: preserve-3d;
@@ -2073,7 +2076,7 @@ textarea {
 #about .about-camera:focus-visible {
   box-shadow:
     0 24px 42px rgba(0, 0, 0, 0.45),
-    0 0 28px rgba(125, 211, 245, 0.65),
+    0 0 30px rgba(157, 229, 115, 0.7),
     inset 0 1px rgba(255, 255, 255, 0.5);
   transform: translateZ(90px) rotateY(-4deg) scale(1.05);
 }
@@ -2085,37 +2088,53 @@ textarea {
 #about .about-camera svg {
   position: relative;
   z-index: 1;
-  width: 100%;
-  height: 100%;
+  width: 61px;
+  height: 49px;
   overflow: visible;
   filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.4));
   animation: aboutCameraFloat 4s ease-in-out infinite;
 }
 #about .about-camera svg path {
-  fill: #dcebf0;
-  stroke: #102a36;
+  fill: #e8f7df;
+  stroke: #143522;
   stroke-linejoin: round;
-  stroke-width: 1.5;
-}
-#about .about-camera svg circle {
-  fill: #0c202a;
-  stroke: #88c7da;
   stroke-width: 2;
 }
+#about .about-camera svg circle {
+  fill: #173829;
+  stroke: #b6e89f;
+  stroke-width: 2.5;
+}
 #about .about-camera svg .camera-lens {
-  fill: #8ed4e8;
-  stroke: #dff8ff;
+  fill: #a4df74;
+  stroke: #f0ffe6;
+}
+#about .about-camera svg .camera-lens-ring {
+  fill: #d8f3c9;
+  stroke: #173829;
+  stroke-width: 2;
+}
+#about .about-camera svg .camera-flash {
+  fill: #b7e88f;
 }
 #about .about-camera-pulse {
   position: absolute;
-  top: 11px;
-  right: 12px;
-  width: 7px;
-  height: 7px;
+  top: 12px;
+  right: 13px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: #9fd63f;
-  box-shadow: 0 0 10px #9fd63f;
+  background: #ff5b50;
+  box-shadow: 0 0 10px #ff5b50;
   animation: aboutCameraStatus 1.8s ease-in-out infinite;
+}
+#about .about-camera-label {
+  position: relative;
+  z-index: 1;
+  color: #e7f6df;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
 }
 #about .about-tv {
   position: absolute;
@@ -2133,7 +2152,8 @@ textarea {
     inset 0 -5px 8px rgba(0, 0, 0, 0.65);
   opacity: 0;
   visibility: hidden;
-  transform: perspective(1200px) rotateY(-78deg) rotateX(10deg) translateZ(-80px) scale(0.82);
+  transform: perspective(1200px) rotateY(-78deg) rotateX(10deg)
+    translateZ(-80px) scale(0.82);
   transform-origin: right center;
   transform-style: preserve-3d;
   transition:
@@ -2144,7 +2164,8 @@ textarea {
 #about .about-tv[aria-hidden="false"] {
   opacity: 1;
   visibility: visible;
-  transform: perspective(1200px) rotateY(-4deg) rotateX(2deg) translateZ(35px) scale(1);
+  transform: perspective(1200px) rotateY(-4deg) rotateX(2deg) translateZ(35px)
+    scale(1);
   transition:
     opacity 0.45s ease,
     transform 0.8s cubic-bezier(0.18, 0.78, 0.24, 1),
@@ -2152,20 +2173,24 @@ textarea {
 }
 #about .about-tv-screen {
   position: relative;
-  display: flex;
-  align-items: center;
-  min-height: 270px;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  padding: 32px;
   border: 1px solid rgba(160, 224, 242, 0.55);
   border-radius: 9px;
-  background:
-    radial-gradient(ellipse at 80% 10%, rgba(52, 126, 201, 0.48), transparent 50%),
-    linear-gradient(135deg, rgba(8, 31, 48, 0.94), rgba(5, 15, 23, 0.98));
+  background: #07120f;
   box-shadow:
     inset 0 0 36px rgba(89, 190, 225, 0.18),
     0 0 18px rgba(75, 182, 219, 0.22);
   transform: translateZ(3px);
+}
+#about .about-tv-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #07120f;
 }
 #about .about-tv-screen::after {
   position: absolute;
@@ -2179,30 +2204,20 @@ textarea {
   content: "";
   pointer-events: none;
 }
-#about .about-tv-content {
-  position: relative;
-  z-index: 1;
-  max-width: 38ch;
-  transform: translateZ(12px);
-}
-#about .about-tv-eyebrow {
-  margin: 0 0 12px;
-  color: #b7e18f;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-}
-#about .about-tv-content h4 {
-  margin: 0 0 12px;
-  color: #fff;
-  font-size: clamp(22px, 2.8vw, 34px);
-  line-height: 1.08;
-}
-#about .about-tv-content > p:last-child {
+#about .about-tv-status {
+  position: absolute;
+  top: 8px;
+  right: 40px;
+  left: 8px;
+  z-index: 2;
   margin: 0;
-  color: rgba(235, 246, 250, 0.88);
-  font-size: 13px;
-  line-height: 1.7;
+  padding: 5px 8px;
+  border-radius: 4px;
+  background: rgba(4, 14, 10, 0.78);
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.4;
+  pointer-events: none;
 }
 #about .about-tv-close {
   position: absolute;
@@ -2235,7 +2250,9 @@ textarea {
 }
 
 @keyframes aboutCameraFloat {
-  50% { transform: translateY(-4px); }
+  50% {
+    transform: translateY(-4px);
+  }
 }
 @keyframes aboutCameraStatus {
   50% {
@@ -3323,37 +3340,31 @@ textarea {
     top: 12px;
     right: 14px;
     left: auto;
-    width: 68px;
-    height: 60px;
-    padding: 9px;
+    width: 78px;
+    height: 72px;
+    padding: 7px;
+  }
+  #about .about-camera svg {
+    width: 44px;
+    height: 36px;
+  }
+  #about .about-camera-label {
+    font-size: 7px;
   }
   #about .about.tv-open .about-camera {
     top: 8px;
-    right: 12px;
-    left: auto;
+    right: auto;
+    left: 12px;
   }
   #about .about-tv {
-    top: 8%;
+    top: 16%;
     right: 3%;
     width: 94%;
     padding: 10px;
   }
   #about .about-tv[aria-hidden="false"] {
-    transform: perspective(1000px) rotateY(-2deg) rotateX(1deg) translateZ(25px) scale(1);
-  }
-  #about .about-tv-screen {
-    min-height: 190px;
-    padding: 18px;
-  }
-  #about .about-tv-content {
-    max-width: 34ch;
-    padding-right: 12px;
-  }
-  #about .about-tv-content h4 {
-    font-size: 22px;
-  }
-  #about .about-tv-content > p:last-child {
-    font-size: 11px;
+    transform: perspective(1000px) rotateY(-2deg) rotateX(1deg) translateZ(25px)
+      scale(1);
   }
   #about .about-tv-close {
     top: 14px;

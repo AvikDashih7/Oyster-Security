@@ -64,15 +64,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const aboutCamera = aboutPanel?.querySelector(".about-camera");
   const aboutTv = aboutPanel?.querySelector(".about-tv");
   const aboutTvClose = aboutPanel?.querySelector(".about-tv-close");
+  const aboutTvVideo = aboutPanel?.querySelector(".about-tv-video");
+  const aboutTvStatus = aboutPanel?.querySelector(".about-tv-status");
 
-  if (aboutPanel && aboutCamera && aboutTv && aboutTvClose) {
+  if (
+    aboutPanel &&
+    aboutCamera &&
+    aboutTv &&
+    aboutTvClose &&
+    aboutTvVideo &&
+    aboutTvStatus
+  ) {
     function setAboutTvOpen(isOpen, returnFocus = false) {
       aboutCamera.setAttribute("aria-expanded", String(isOpen));
       aboutCamera.setAttribute(
         "aria-label",
         isOpen
-          ? "Close company information on the television"
-          : "Open company information on the television"
+          ? "Close the Oyster Security advertisement"
+          : "Play the Oyster Security advertisement"
       );
       aboutTv.setAttribute("aria-hidden", String(!isOpen));
       aboutTv.inert = !isOpen;
@@ -80,8 +89,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (isOpen) {
         aboutTvClose.focus();
-      } else if (returnFocus) {
-        aboutCamera.focus();
+        aboutTvVideo.play().catch(() => {
+          aboutTvStatus.textContent = aboutTvVideo.error
+            ? "Add video/oyster-security-ad.mp4 to play the advertisement."
+            : "Playback did not start. Use the player controls to try again.";
+        });
+      } else {
+        aboutTvVideo.pause();
+        if (aboutTvVideo.readyState > 0) aboutTvVideo.currentTime = 0;
+        aboutTvStatus.textContent = "";
+        if (returnFocus) aboutCamera.focus();
       }
     }
 

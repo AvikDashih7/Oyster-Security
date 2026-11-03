@@ -348,43 +348,48 @@
             <button
               class="about-camera"
               type="button"
-              aria-label="Open company information on the television"
+              aria-label="Play the Oyster Security advertisement"
               aria-expanded="false"
               aria-controls="about-tv"
             >
               <svg viewBox="0 0 80 64" aria-hidden="true">
-                <path d="M21 7h43a8 8 0 0 1 8 8v22a8 8 0 0 1-8 8H34L19 34V15a8 8 0 0 1 2-8Z" />
-                <path d="m31 45 4 9 10 2v3H22v-3l9-3-3-8" />
-                <circle cx="55" cy="26" r="13" />
-                <circle cx="55" cy="26" r="7" />
-                <circle class="camera-lens" cx="55" cy="26" r="3" />
-                <path d="M10 15h8v20h-8z" />
+                <path d="M8 19a6 6 0 0 1 6-6h34l9 9h9a6 6 0 0 1 6 6v20a6 6 0 0 1-6 6H14a6 6 0 0 1-6-6z" />
+                <path class="camera-lens-ring" d="M42 25a13 13 0 1 0 0 26 13 13 0 0 0 0-26Z" />
+                <circle cx="42" cy="38" r="8" />
+                <circle class="camera-lens" cx="42" cy="38" r="3" />
+                <path class="camera-flash" d="M16 20h8v5h-8z" />
               </svg>
               <span class="about-camera-pulse" aria-hidden="true"></span>
+              <span class="about-camera-label">WATCH FILM</span>
             </button>
             <div
               class="about-tv"
               id="about-tv"
               role="dialog"
-              aria-label="About Oyster Digital Security"
+              aria-label="Oyster Digital Security advertisement"
               aria-hidden="true"
               inert
             >
               <div class="about-tv-screen">
-                <div class="about-tv-content">
-                  <p class="about-tv-eyebrow">OYSTER DIGITAL SECURITY</p>
-                  <h4>Your Security.<br />Smarter. Connected.</h4>
-                  <p>
-                    Oyster Digital, LLC Security is a Colorado-based company on
-                    the cutting edge of security cameras and other security
-                    products.
-                  </p>
-                </div>
+                <video
+                  class="about-tv-video"
+                  controls
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                  poster="image/about_us.jpg"
+                  aria-label="Oyster Digital Security advertisement video"
+                >
+                  <source src="video/oyster-security-ad.mp4" type="video/mp4" />
+                  Your browser does not support HTML video.
+                </video>
+                <p class="about-tv-status" aria-live="polite"></p>
               </div>
               <button
                 class="about-tv-close"
                 type="button"
-                aria-label="Close company information"
+                aria-label="Close advertisement"
               >
                 ×
               </button>
@@ -665,7 +670,7 @@
             ><a href="#contact">Contact</a>
           </div>
           <div class="footer-col">
-            <h3>Services</h3>
+            <fh3>Services</fh3>
             <a href="#services">Video surveillance</a
             ><a href="#services">Alarm systems</a
             ><a href="#services">Access control</a
