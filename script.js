@@ -1,4 +1,4 @@
-// Shared button labels.
+/* ==================== SHARED BUTTON FUNCTIONALITY START ==================== */
 document.addEventListener("DOMContentLoaded", () => {
   function setButtonLabel(button, label) {
     const labelElement = document.createElement("span");
@@ -21,6 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.querySelectorAll(".btn").forEach(button => {
+    if (button.closest(".insight-card .body")) return;
+
     const label = Array.from(button.childNodes)
       .filter(node => node.nodeType === Node.TEXT_NODE)
       .map(node => node.textContent)
@@ -29,7 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (label) setButtonLabel(button, label);
   });
 
-  // Header navigation and mobile menu.
+  /* ==================== SHARED BUTTON FUNCTIONALITY END ==================== */
+
+  /* ==================== HEADER NAVIGATION FUNCTIONALITY START ==================== */
   const menuToggle = document.querySelector(".menu-toggle");
   const nav = document.querySelector(".main-nav");
   const navLinks = document.querySelectorAll(".main-nav a");
@@ -53,8 +57,58 @@ document.addEventListener("DOMContentLoaded", () => {
   navLinks.forEach(link => link.addEventListener("click", closeMenu));
   document.addEventListener("keydown", event => { if (event.key === "Escape") closeMenu(); });
   mobileViewport.addEventListener("change", closeMenu);
+  /* ==================== HEADER NAVIGATION FUNCTIONALITY END ==================== */
 
-  // Intro and Services entrance animations.
+  /* ==================== ABOUT CAMERA AND TELEVISION FUNCTIONALITY START ==================== */
+  const aboutPanel = document.querySelector("#about .about");
+  const aboutCamera = aboutPanel?.querySelector(".about-camera");
+  const aboutTv = aboutPanel?.querySelector(".about-tv");
+  const aboutTvClose = aboutPanel?.querySelector(".about-tv-close");
+
+  if (aboutPanel && aboutCamera && aboutTv && aboutTvClose) {
+    function setAboutTvOpen(isOpen, returnFocus = false) {
+      aboutCamera.setAttribute("aria-expanded", String(isOpen));
+      aboutCamera.setAttribute(
+        "aria-label",
+        isOpen
+          ? "Close company information on the television"
+          : "Open company information on the television"
+      );
+      aboutTv.setAttribute("aria-hidden", String(!isOpen));
+      aboutTv.inert = !isOpen;
+      aboutPanel.classList.toggle("tv-open", isOpen);
+
+      if (isOpen) {
+        aboutTvClose.focus();
+      } else if (returnFocus) {
+        aboutCamera.focus();
+      }
+    }
+
+    aboutCamera.addEventListener("click", () => {
+      setAboutTvOpen(aboutCamera.getAttribute("aria-expanded") !== "true", true);
+    });
+    aboutTvClose.addEventListener("click", () => setAboutTvOpen(false, true));
+
+    document.addEventListener("pointerdown", event => {
+      if (
+        aboutCamera.getAttribute("aria-expanded") === "true" &&
+        !aboutTv.contains(event.target) &&
+        !aboutCamera.contains(event.target)
+      ) {
+        setAboutTvOpen(false);
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && aboutCamera.getAttribute("aria-expanded") === "true") {
+        setAboutTvOpen(false, true);
+      }
+    });
+  }
+  /* ==================== ABOUT CAMERA AND TELEVISION FUNCTIONALITY END ==================== */
+
+  /* ==================== INTRO AND SERVICES ENTRANCE ANIMATIONS START ==================== */
   const introStrip = document.querySelector(".intro-strip");
   const servicesSection = document.querySelector(".services-section");
   const serviceHeading = servicesSection?.querySelector(".section-heading");
@@ -135,8 +189,9 @@ document.addEventListener("DOMContentLoaded", () => {
       playSectionAnimation(servicesSection);
     }
   }
+  /* ==================== INTRO AND SERVICES ENTRANCE ANIMATIONS END ==================== */
 
-  // Reveal visible content sections.
+  /* ==================== REVEAL ANIMATIONS START ==================== */
   const revealItems = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window) {
     const revealObserver = new IntersectionObserver((entries, observer) => {
@@ -151,11 +206,16 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     revealItems.forEach(item => item.classList.add("is-visible"));
   }
+  /* ==================== REVEAL ANIMATIONS END ==================== */
 
-  // Services carousel: draggable, snapping, and responsive to viewport changes.
+  /* ==================== SERVICES CAROUSEL FUNCTIONALITY START ==================== */
   const serviceViewport = servicesSection.querySelector(".service-viewport");
   const serviceTrack = serviceViewport.querySelector(".service-grid");
   const serviceCards = Array.from(serviceTrack.querySelectorAll(".service-card"));
+  const servicePagination = servicesSection.querySelector(".service-pagination");
+  const servicePaginationDots = Array.from(
+    servicePagination.querySelectorAll("[data-service-index]")
+  );
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   let serviceTween;
   let serviceScrollTrigger;
@@ -182,6 +242,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
     cards.forEach(card => card.classList.toggle("is-active", card === activeCard));
+    const activeIndex = cards.indexOf(activeCard) % serviceCards.length;
+    servicePaginationDots.forEach((dot, index) => {
+      const isActive = index === activeIndex;
+      dot.classList.toggle("is-active", isActive);
+      dot.setAttribute("aria-current", String(isActive));
+    });
   }
 
   function makeServiceClones() {
@@ -287,6 +353,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (serviceCards.length > 1) {
     setupServiceCarousel();
+    servicePaginationDots.forEach(dot => {
+      dot.addEventListener("click", () => {
+        const index = Number(dot.dataset.serviceIndex);
+        if (!Number.isInteger(index) || index < 0 || index >= serviceCards.length) return;
+
+        if (serviceScrollTrigger) {
+          const progress = index / serviceCards.length;
+          serviceScrollTrigger.scroll(
+            serviceScrollTrigger.start +
+            progress * (serviceScrollTrigger.end - serviceScrollTrigger.start)
+          );
+          serviceScrollTrigger.update();
+        } else {
+          serviceViewport.scrollTo({
+            left: serviceCards[index].offsetLeft,
+            behavior: reducedMotion.matches ? "auto" : "smooth"
+          });
+        }
+      });
+    });
     serviceViewport.addEventListener("pointerdown", event => {
       if (event.button !== 0 || (event.pointerType === "touch" && !serviceScrollTrigger)) return;
       draggedServiceCard = false;
@@ -350,36 +436,60 @@ document.addEventListener("DOMContentLoaded", () => {
     reducedMotion.addEventListener("change", setupServiceCarousel);
   }
 
-  // Contact form toggle and demo-only validation feedback.
+  /* ==================== SERVICES CAROUSEL FUNCTIONALITY END ==================== */
+
+  /* ==================== CONTACT ORNAMENT ANIMATION START ==================== */
+  const contactOrnament = document.querySelector(".contact-ornament img");
+  const contactSection = document.querySelector(".contact-section");
+  if (
+    contactOrnament &&
+    contactSection &&
+    window.gsap &&
+    !reducedMotion.matches
+  ) {
+    let targetRotation = Number(window.gsap.getProperty(contactOrnament, "rotation")) || 0;
+    contactSection.addEventListener("wheel", event => {
+      const bounds = contactOrnament.getBoundingClientRect();
+      const pointerOverImage =
+        event.clientX >= bounds.left &&
+        event.clientX <= bounds.right &&
+        event.clientY >= bounds.top &&
+        event.clientY <= bounds.bottom;
+      if (!pointerOverImage || event.deltaY === 0) return;
+
+      targetRotation += event.deltaY * 0.6;
+      window.gsap.killTweensOf(contactOrnament, "rotation");
+      window.gsap.to(contactOrnament, {
+        rotation: targetRotation,
+        transformOrigin: "50% 50%",
+        duration: 0.35,
+        ease: "none"
+      });
+    }, { passive: true });
+  }
+  /* ==================== CONTACT ORNAMENT ANIMATION END ==================== */
+
+  /* ==================== CONTACT FORM FUNCTIONALITY START ==================== */
   const form = document.getElementById("contact-form");
-  const formToggle = document.getElementById("contact-form-toggle");
-  const formToggleIcon = formToggle.querySelector("[aria-hidden='true']");
-  formToggle.addEventListener("click", () => {
-    const isOpen = formToggle.getAttribute("aria-expanded") === "true";
-    form.hidden = isOpen;
-    formToggle.setAttribute("aria-expanded", String(!isOpen));
-    setButtonLabel(formToggle, isOpen ? "Open enquiry form" : "Close enquiry form");
-    formToggleIcon.textContent = isOpen ? "+" : "−";
-    if (!isOpen) {
-      form.querySelector("input[name='firstName']").focus();
-    }
-  });
   form.addEventListener("submit", event => {
     event.preventDefault();
     if (!form.reportValidity()) return;
     const message = form.querySelector(".form-message");
     message.textContent = "This demo form is not connected to a submission service. Your enquiry was not sent.";
   });
+  /* ==================== CONTACT FORM FUNCTIONALITY END ==================== */
 
-  // Back-to-top control and current footer year.
+  /* ==================== FOOTER CONTROLS START ==================== */
   const topButton = document.querySelector(".back-to-top");
   window.addEventListener("scroll", () => {
     topButton.classList.toggle("visible", window.scrollY > 550);
   }, { passive: true });
   topButton.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
-  document.getElementById("year").textContent = new Date().getFullYear();
+  const yearElement = document.getElementById("year");
+  if (yearElement) yearElement.textContent = new Date().getFullYear();
+  /* ==================== FOOTER CONTROLS END ==================== */
 
-  // Hero section: trace the security arc and reveal each icon in sequence.
+  /* ==================== HERO SECURITY ICON ANIMATION START ==================== */
   (function heroArc() {
     const hero = document.querySelector(".hero");
     if (!hero) return;
@@ -396,19 +506,54 @@ document.addEventListener("DOMContentLoaded", () => {
     svg.setAttribute("class", "hero-arc");
     svg.setAttribute("viewBox", "560 110 520 300");
     svg.setAttribute("aria-hidden", "true");
-    svg.innerHTML =
-      '<path class="arc" d="M580 350 A230 230 0 0 1 1040 350"/><circle class="start-dot" cx="580" cy="350" r="4"/>' +
-      icons.map(icon => `<g class="node"><circle class="pulse" r="26"/><g class="in"><circle class="ring" r="26"/><foreignObject x="-16" y="-16" width="32" height="32"><div xmlns="http://www.w3.org/1999/xhtml" class="node-media"><img class="node-image" src="${icon.src}" alt=""/></div></foreignObject></g></g>`).join("");
+    const ns = "http://www.w3.org/2000/svg";
+    const arc = document.createElementNS(ns, "path");
+    arc.setAttribute("class", "arc");
+    arc.setAttribute("d", "M580 350 A230 230 0 0 1 1040 350");
+    svg.append(arc);
+
+    const startDot = document.createElementNS(ns, "circle");
+    startDot.setAttribute("class", "start-dot");
+    startDot.setAttribute("cx", "580");
+    startDot.setAttribute("cy", "350");
+    startDot.setAttribute("r", "4");
+    svg.append(startDot);
+
+    const nodes = icons.map(icon => {
+      const node = document.createElementNS(ns, "g");
+      node.setAttribute("class", "node");
+      const pulse = document.createElementNS(ns, "circle");
+      pulse.setAttribute("class", "pulse");
+      pulse.setAttribute("r", "26");
+      node.append(pulse);
+
+      const inner = document.createElementNS(ns, "g");
+      inner.setAttribute("class", "in");
+      const ring = document.createElementNS(ns, "circle");
+      ring.setAttribute("class", "ring");
+      ring.setAttribute("r", "26");
+      inner.append(ring);
+
+      const image = document.createElementNS(ns, "image");
+      image.setAttribute("class", "node-image");
+      image.setAttribute("x", "-16");
+      image.setAttribute("y", "-16");
+      image.setAttribute("width", "32");
+      image.setAttribute("height", "32");
+      image.setAttribute("href", icon.src);
+      image.setAttribute("preserveAspectRatio", "xMidYMid meet");
+      inner.append(image);
+      node.append(inner);
+      svg.append(node);
+      return node;
+    });
     hero.append(svg);
 
-    const path = svg.querySelector(".arc");
-    const dot = svg.querySelector(".start-dot");
-    const nodes = Array.from(svg.querySelectorAll(".node"));
-    const length = path.getTotalLength();
+    const length = arc.getTotalLength();
     const stops = pts.map((q, i) => {
       let best = 0, bestDist = Infinity;
       for (let l = 0; l <= length; l += 2) {
-        const p = path.getPointAtLength(l);
+        const p = arc.getPointAtLength(l);
         const dist = (p.x - q[0]) ** 2 + (p.y - q[1]) ** 2;
         if (dist < bestDist) { bestDist = dist; best = l; }
       }
@@ -416,8 +561,8 @@ document.addEventListener("DOMContentLoaded", () => {
       nodes[i].style.setProperty("--d", `${i * 0.3}s`);
       return best / length;
     });
-    path.style.strokeDasharray = length;
-    path.style.strokeDashoffset = length;
+    arc.style.strokeDasharray = length;
+    arc.style.strokeDashoffset = length;
     const opened = [];
     const duration = reduce ? 1 : 4200;
     let start = null;
@@ -425,20 +570,21 @@ document.addEventListener("DOMContentLoaded", () => {
       if (start === null) start = now;
       const t = Math.min(1, (now - start) / duration);
       const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-      path.style.strokeDashoffset = length * (1 - e);
+      arc.style.strokeDashoffset = length * (1 - e);
       nodes.forEach((n, i) => {
         if (!opened[i] && e >= stops[i] - 0.015) { opened[i] = true; n.classList.add("on"); }
       });
       if (t < 1) requestAnimationFrame(tick);
     }
     setTimeout(() => {
-      dot.classList.add("on");
+      startDot.classList.add("on");
       setTimeout(() => requestAnimationFrame(tick), 500);
     }, 600);
   })();
+  /* ==================== HERO SECURITY ICON ANIMATION END ==================== */
 });
 
-// Features section: tie the active feature and 3D artwork to page scroll.
+/* ==================== FEATURES SCROLL ANIMATION START ==================== */
 (function () {
   var section = document.getElementById("sec");
   var slides = Array.from(document.querySelectorAll(".slide"));
@@ -511,8 +657,9 @@ document.addEventListener("DOMContentLoaded", () => {
   current = target;
   requestAnimationFrame(renderFrame);
 })();
+/* ==================== FEATURES SCROLL ANIMATION END ==================== */
 
-// Devices section: accessible 3D carousel with wheel, drag, dots, and keyboard input.
+/* ==================== DEVICES CAROUSEL FUNCTIONALITY START ==================== */
 const devices = [
   { name: "Fiber", image: "image/device_1.png" },
   { name: "Drones", image: "image/device_2.png" },
@@ -680,9 +827,10 @@ sw.addEventListener("keydown", event => {
 window.addEventListener("resize", () => layout());
 layout();
 restart();
+/* ==================== DEVICES CAROUSEL FUNCTIONALITY END ==================== */
 
-// Devices and About sections: apply perspective as they enter and leave the viewport.
-const panels = Array.from(document.querySelectorAll(".panel"));
+/* ==================== DEVICES AND ABOUT SCROLL TRANSFORMS START ==================== */
+const panels = Array.from(document.querySelectorAll("#devices.panel, #about.panel"));
 let isPanelFramePending = false;
 
 function updatePanelTransforms() {
@@ -725,97 +873,365 @@ addEventListener("scroll", () => {
 }, { passive: true });
 addEventListener("resize", updatePanelTransforms);
 updatePanelTransforms();
+/* ==================== DEVICES AND ABOUT SCROLL TRANSFORMS END ==================== */
 
-// 3D testimonials: replace these clearly marked placeholders with approved client feedback.
-(function () {
-  const stage = document.querySelector("[data-testimonials3d]");
-  if (!stage) return;
+/* ==================== INSIGHTS CARD INTERACTIONS START ==================== */
+const insightGrid = document.querySelector(".insight-grid");
+if (insightGrid) {
+  const insightCards = Array.from(insightGrid.querySelectorAll(".insight-card"));
+  const desktopInsightLayout = matchMedia("(min-width: 801px)");
+  const reducedInsightMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  let activeInsightIndex = -1;
+  let insightProgressTween;
 
-  const quote = stage.querySelector("[data-testimonials3d-quote]");
-  const name = stage.querySelector("[data-testimonials3d-name]");
-  const role = stage.querySelector("[data-testimonials3d-role]");
-  const card = stage.querySelector(".testimonials3d__card");
-  const dotsContainer = document.querySelector("[data-testimonials3d-dots]");
-  const previousButton = document.querySelector("[data-testimonials3d-prev]");
-  const nextButton = document.querySelector("[data-testimonials3d-next]");
-  const testimonials = [
-    {
-      quote: "Add an approved customer quote about their security goals and experience.",
-      name: "Client name",
-      role: "Organization / role"
-    },
-    {
-      quote: "Add a verified customer story about a solution delivered by Oyster Digital Security.",
-      name: "Client name",
-      role: "Organization / role"
-    },
-    {
-      quote: "Add approved feedback about the customer's experience working with the team.",
-      name: "Client name",
-      role: "Organization / role"
-    }
-  ];
-  let activeIndex = 0;
-  let transitionId = 0;
-
-  const dots = testimonials.map((_, index) => {
-    const dot = document.createElement("button");
-    dot.className = "testimonials3d__dot";
-    dot.type = "button";
-    dot.setAttribute("aria-label", `Show testimonial ${index + 1}`);
-    dot.setAttribute("aria-pressed", "false");
-    dot.addEventListener("click", () => showTestimonial(index));
-    dotsContainer.append(dot);
-    return dot;
-  });
-
-  function showTestimonial(index) {
-    activeIndex = (index + testimonials.length) % testimonials.length;
-    const currentTransition = ++transitionId;
-    card.classList.add("is-changing");
-    dots.forEach((dot, dotIndex) => {
-      dot.setAttribute("aria-pressed", String(dotIndex === activeIndex));
+  function activateInsightCard(index) {
+    if (!insightCards.length) return;
+    activeInsightIndex = (index + insightCards.length) % insightCards.length;
+    insightCards.forEach((card, cardIndex) => {
+      const isActive = cardIndex === activeInsightIndex;
+      card.classList.toggle("is-active", isActive);
+      card.setAttribute("aria-expanded", String(isActive));
     });
 
-    window.setTimeout(() => {
-      if (currentTransition !== transitionId) return;
-      const testimonial = testimonials[activeIndex];
-      quote.textContent = testimonial.quote;
-      name.textContent = testimonial.name;
-      role.textContent = testimonial.role;
-      card.classList.remove("is-changing");
-    }, 160);
+    if (insightProgressTween) insightProgressTween.kill();
+    if (!window.gsap || !desktopInsightLayout.matches || reducedInsightMotion.matches) {
+      return;
+    }
+
+    const progressBars = insightCards.map(card => card.querySelector(".bar i"));
+    window.gsap.set(progressBars, { scaleX: 0 });
+    insightProgressTween = window.gsap.to(progressBars[activeInsightIndex], {
+      scaleX: 1,
+      duration: 6,
+      ease: "none",
+      onComplete: () => activateInsightCard(activeInsightIndex + 1),
+    });
+    if (insightGrid.matches(":hover")) insightProgressTween.pause();
   }
 
-  previousButton.addEventListener("click", () => {
-    showTestimonial(activeIndex - 1);
-  });
-  nextButton.addEventListener("click", () => {
-    showTestimonial(activeIndex + 1);
-  });
-  stage.addEventListener("keydown", event => {
-    if (event.key === "ArrowLeft") {
+  insightCards.forEach((card, index) => {
+    card.addEventListener("pointerenter", () => activateInsightCard(index));
+    card.addEventListener("focusin", () => activateInsightCard(index));
+    card.addEventListener("click", event => {
+      if (event.target.closest("a, button")) return;
+      activateInsightCard(index);
+    });
+    card.addEventListener("keydown", event => {
+      if (
+        event.target !== card ||
+        (event.key !== "Enter" && event.key !== " ")
+      ) {
+        return;
+      }
       event.preventDefault();
-      showTestimonial(activeIndex - 1);
-    } else if (event.key === "ArrowRight") {
-      event.preventDefault();
-      showTestimonial(activeIndex + 1);
-    }
-  });
-  stage.addEventListener("pointermove", event => {
-    if (event.pointerType === "touch") return;
-    const bounds = stage.getBoundingClientRect();
-    const horizontalOffset = (event.clientX - bounds.left) / bounds.width - 0.5;
-    const verticalOffset = (event.clientY - bounds.top) / bounds.height - 0.5;
-    card.style.setProperty("--testimonial-rotate-x", `${-verticalOffset * 7}deg`);
-    card.style.setProperty("--testimonial-rotate-y", `${horizontalOffset * 7}deg`);
-  });
-  stage.addEventListener("pointerleave", () => {
-    card.style.removeProperty("--testimonial-rotate-x");
-    card.style.removeProperty("--testimonial-rotate-y");
+      activateInsightCard(index);
+    });
   });
 
-  showTestimonial(activeIndex);
+  insightGrid.addEventListener("mouseenter", () => insightProgressTween?.pause());
+  insightGrid.addEventListener("mouseleave", () => insightProgressTween?.resume());
+  desktopInsightLayout.addEventListener("change", () =>
+    activateInsightCard(Math.max(0, activeInsightIndex)),
+  );
+  reducedInsightMotion.addEventListener("change", () =>
+    activateInsightCard(Math.max(0, activeInsightIndex)),
+  );
+  if (window.gsap && desktopInsightLayout.matches) {
+    window.gsap.from(insightCards, {
+      clipPath: "inset(100% 0% 0% 0% round 18px)",
+      y: 40,
+      duration: reducedInsightMotion.matches ? 0.01 : 1.3,
+      ease: "expo.out",
+      stagger: 0.14,
+      onComplete: () => window.gsap.set(insightCards, { clearProps: "clipPath" }),
+    });
+  }
+  activateInsightCard(0);
+}
+/* ==================== INSIGHTS CARD INTERACTIONS END ==================== */
+
+/* ==================== 3D CLIENT TESTIMONIALS FUNCTIONALITY START ==================== */
+
+(() => {
+  const root = document.querySelector(".client-testimonials3d");
+  const stage = root.querySelector("[data-testimonial-stage]");
+  const card = root.querySelector("[data-testimonial-card]");
+  const quote = root.querySelector("[data-testimonial-quote]");
+  const who = root.querySelector("[data-testimonial-who]");
+  const testimonials = [
+    {
+      q: "Oyster delivered exactly what we needed. Their team took the time to understand our requirements, recommended the right technology, and handled every stage of the installation with professionalism. The entire process was seamless, and the final solution has given us greater confidence in our security and infrastructure.",
+      w: "Operations Director, Commercial Client",
+    },
+    {
+      q: "From the site survey to the final handover, nothing was left to chance. Our cameras and access control now work as one system, and our staff actually enjoy using it.",
+      w: "Facilities Head, Logistics Group",
+    },
+    {
+      q: "They explained every option in plain language and never pushed for more than we needed. The installation finished a day early.",
+      w: "Managing Director, Retail Chain",
+    },
+    {
+      q: "Response times are excellent. When we added a second warehouse, the same team scaled our network and surveillance without any downtime.",
+      w: "IT Manager, Manufacturing Client",
+    },
+    {
+      q: "Clear communication, tidy work, and a system that runs quietly in the background. Exactly what a growing school campus needs.",
+      w: "Administrator, Education Client",
+    },
+    {
+      q: "We trusted Oyster with our most sensitive areas. Their planning and documentation made our audit far easier.",
+      w: "Compliance Lead, Healthcare Client",
+    },
+  ];
+
+  const avatarImages = Array.from(
+    { length: 5 },
+    (_, index) => `image/user_${index + 1}.png`,
+  );
+  const slots = [
+    [14, 150, 64, 40],
+    [68, 70, 56, -40],
+    [89, 200, 66, 70],
+    [5, 300, 60, 90],
+    [26, 470, 46, -30],
+  ];
+  let current = 0;
+  let busy = false;
+  let timer;
+  const avatars = testimonials.map((_, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "client-testimonials3d__avatar";
+    button.setAttribute(
+      "aria-label",
+      `Show testimonial ${index + 1}`,
+    );
+    const image = document.createElement("img");
+    image.src = avatarImages[index % avatarImages.length];
+    image.alt = "";
+    image.draggable = false;
+    button.appendChild(image);
+    button.addEventListener("click", () => go(index));
+    stage.appendChild(button);
+    return button;
+  });
+
+  function layout() {
+    const width = stage.clientWidth;
+    avatars.forEach((avatar, index) => {
+      const offset =
+        (index - current + testimonials.length) %
+        testimonials.length;
+      if (offset === 0) {
+        avatar.classList.add("is-main");
+        avatar.classList.remove("is-small");
+        Object.assign(avatar.style, {
+          left: "50%",
+          top: "104px",
+          width: "96px",
+          height: "96px",
+          transform: "translate(-50%,-50%) translateZ(120px)",
+          zIndex: 5,
+        });
+        avatar.tabIndex = -1;
+      } else {
+        const [x, y, size, depth] = slots[offset - 1];
+        avatar.classList.remove("is-main");
+        avatar.classList.add("is-small");
+        avatar.tabIndex = 0;
+        Object.assign(avatar.style, {
+          left: `${(x / 100) * width}px`,
+          top: `${y}px`,
+          width: `${size}px`,
+          height: `${size}px`,
+          transform: `translate(-50%,-50%) translateZ(${depth}px)`,
+          zIndex: 2,
+        });
+      }
+    });
+  }
+
+  function show() {
+    quote.textContent = `“${testimonials[current].q}”`;
+    who.textContent = `— ${testimonials[current].w}`;
+  }
+
+  function go(index) {
+    if (busy || index === current) return;
+    busy = true;
+    card.classList.add("is-out");
+    current = (index + testimonials.length) % testimonials.length;
+    layout();
+    window.setTimeout(() => {
+      show();
+      card.classList.remove("is-out");
+      card.classList.add("is-in");
+      void card.offsetWidth;
+      card.classList.remove("is-in");
+      busy = false;
+    }, 450);
+    restart();
+  }
+
+  function restart() {
+    window.clearInterval(timer);
+    timer = window.setInterval(() => go(current + 1), 6500);
+  }
+
+  root
+    .querySelector("[data-testimonial-next]")
+    .addEventListener("click", () => go(current + 1));
+  root
+    .querySelector("[data-testimonial-prev]")
+    .addEventListener("click", () => go(current - 1));
+  stage.addEventListener("pointerenter", () =>
+    window.clearInterval(timer),
+  );
+  stage.addEventListener("pointerleave", () => {
+    restart();
+    stage.style.transform = "";
+  });
+  stage.addEventListener("pointermove", (event) => {
+    const bounds = stage.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+    stage.style.transform = `rotateY(${x * 14}deg) rotateX(${-y * 10
+      }deg)`;
+  });
+
+  const canvas = root.querySelector("[data-testimonial-map]");
+  const context = canvas.getContext("2d");
+  let dots = [];
+  const land = [
+    [
+      [8, 8],
+      [28, 6],
+      [34, 14],
+      [30, 22],
+      [24, 30],
+      [20, 34],
+      [16, 26],
+      [8, 18],
+    ],
+    [
+      [24, 35],
+      [34, 37],
+      [36, 46],
+      [30, 60],
+      [26, 52],
+      [24, 42],
+    ],
+    [
+      [46, 10],
+      [56, 8],
+      [58, 16],
+      [50, 20],
+      [45, 16],
+    ],
+    [
+      [46, 23],
+      [58, 23],
+      [62, 34],
+      [56, 48],
+      [50, 46],
+      [46, 34],
+    ],
+    [
+      [56, 8],
+      [84, 8],
+      [90, 18],
+      [82, 28],
+      [70, 30],
+      [62, 24],
+      [56, 16],
+    ],
+    [
+      [78, 42],
+      [90, 42],
+      [90, 52],
+      [80, 52],
+    ],
+  ];
+
+  function buildMap() {
+    const width = (canvas.width = stage.clientWidth);
+    const height = (canvas.height = stage.clientHeight);
+    const offscreen = document.createElement("canvas");
+    offscreen.width = width;
+    offscreen.height = height;
+    const offscreenContext = offscreen.getContext("2d");
+    const scaleX = (width * 0.78) / 100;
+    const scaleY = (height * 0.72) / 60;
+    const offsetX = width * 0.11;
+    const offsetY = height * 0.28;
+    offscreenContext.fillStyle = "#000";
+    land.forEach((points) => {
+      offscreenContext.beginPath();
+      points.forEach(([x, y], index) =>
+        offscreenContext[index ? "lineTo" : "moveTo"](
+          offsetX + x * scaleX,
+          offsetY + y * scaleY,
+        ),
+      );
+      offscreenContext.fill();
+    });
+    const pixels = offscreenContext.getImageData(
+      0,
+      0,
+      width,
+      height,
+    ).data;
+    dots = [];
+    for (let y = 0; y < height; y += 9) {
+      for (let x = 0; x < width; x += 9) {
+        if (pixels[(y * width + x) * 4 + 3] > 128) {
+          dots.push([x, y]);
+        }
+      }
+    }
+  }
+
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  function draw(time) {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    const rgb = getComputedStyle(root)
+      .getPropertyValue("--testimonial-dot")
+      .trim();
+    for (const [x, y] of dots) {
+      const alpha =
+        0.14 +
+        0.5 *
+        Math.max(
+          0,
+          Math.sin(x * 0.012 - y * 0.006 - time / 900),
+        ) **
+        6;
+      context.fillStyle = `rgba(${rgb},${alpha})`;
+      context.beginPath();
+      context.arc(x, y, 2.2, 0, 6.283);
+      context.fill();
+    }
+    if (!reducedMotion) {
+      window.requestAnimationFrame(draw);
+    }
+  }
+
+  function init() {
+    buildMap();
+    layout();
+    if (reducedMotion) draw(0);
+  }
+
+  window.addEventListener("resize", init);
+  show();
+  init();
+  if (!reducedMotion) {
+    window.requestAnimationFrame(draw);
+    restart();
+  }
 })();
 
-
+/* ==================== 3D CLIENT TESTIMONIALS FUNCTIONALITY END ==================== */
